@@ -111,6 +111,16 @@ export class ChallengesService {
       throw new NotFoundException(`Challenge ${id} not registered!`);
     }
 
+    const playerFilter = challenge.players.filter(
+      player => player.id === attachChallengeToMatchDto.def,
+    );
+
+    if (playerFilter.length === 0) {
+      throw new BadRequestException(
+        `Player ${attachChallengeToMatchDto.def} is not a valid player!`,
+      );
+    }
+
     const match = new this.matchModel(attachChallengeToMatchDto);
 
     match.category = challenge.category;
@@ -118,7 +128,7 @@ export class ChallengesService {
 
     const result = await match.save();
 
-    challenge.status = ChallengeStatus.DONE;
+    challenge.status = ChallengeStatus.PLAYED;
 
     challenge.match = result.id;
 
