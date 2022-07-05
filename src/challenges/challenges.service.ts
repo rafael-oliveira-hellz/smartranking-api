@@ -25,22 +25,24 @@ export class ChallengesService {
     const players = await this.playersService.getAllPlayers();
 
     createChallengeDto.players.map(playerDto => {
-      const playerFilter = players.filter(player => player.id == playerDto.id);
+      const playerFilter = players.filter(player => player._id == playerDto.id);
 
       if (playerFilter.length == 0) {
         throw new BadRequestException(`Id ${playerDto.id} is not a valid player!`);
       }
+
+      this.logger.log(playerFilter);
     })
 
     // Verify if the requester is one of the match players
 
     const requesterIsOneOfTheMatchPlayers = createChallengeDto.players.filter(player => player.id == createChallengeDto.requester);
 
-    this.logger.log(requesterIsOneOfTheMatchPlayers);
-
     if (requesterIsOneOfTheMatchPlayers.length == 0) {
-      throw new BadRequestException(`Id ${createChallengeDto.requester} is not a valid player!`);
+      throw new BadRequestException(`Id ${createChallengeDto.requester} should be a match participant!`);
     }
+
+    this.logger.log(requesterIsOneOfTheMatchPlayers);
 
     const playerCategory = await this.categoriesService.getPlayerCategory(createChallengeDto.requester);
 
