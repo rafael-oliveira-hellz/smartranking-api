@@ -40,13 +40,15 @@ export class PlayersService {
   }
 
   async getPlayerById(id: string): Promise<IPlayer> {
-    const player = await this.playerModel.findOne({ id }).exec();
+    const player = await this.playerModel.findById(id).exec();
 
-    Logger.log(player.id);
+
 
     if (!player) {
-      throw new NotFoundException('Player [ ' + player + ' ] not found');
+      throw new NotFoundException('Player [ ' + id + ' ] not found');
     }
+
+    Logger.log('Player: ' + player.name);
 
     return player;
   }
@@ -80,7 +82,7 @@ export class PlayersService {
     const player = await this.playerModel.findOne({ id }).exec();
 
     if (!player) {
-      throw new NotFoundException('Player [ ' + player.name + ' ] not found');
+      throw new NotFoundException('Player [ ' + id + ' ] not found');
     }
 
     return await this.playerModel.deleteOne({ id }).exec();
