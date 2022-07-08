@@ -17,14 +17,14 @@ export class ChallengesController {
   @Post()
   @UsePipes(ValidationPipe)
   async create(@Body() createChallengeDto: CreateChallengeDto): Promise<IChallenge> {
-    this.logger.log(`Creating a new challenge: ${JSON.stringify(createChallengeDto)}`);
+    // this.logger.log(`Creating a new challenge: ${JSON.stringify(createChallengeDto)}`);
 
     return await this.challengesService.createChallenge(createChallengeDto);
   }
 
   @Get()
   async findAll(
-    @Query('playerId') id: string
+    @Query('playerId') id: string[]
   ): Promise<Array<IChallenge>> {
     return id ? await this.challengesService.getPlayerChallenges(id) : await this.challengesService.getAllChallenges();
   }

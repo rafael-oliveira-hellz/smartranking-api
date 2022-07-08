@@ -25,24 +25,20 @@ export class ChallengesService {
     const players = await this.playersService.getAllPlayers();
 
     createChallengeDto.players.map(playerDto => {
-      const playerFilter = players.filter(player => player._id == playerDto.id);
+      const playerFilter = players.filter(player => player._id === playerDto.id);
 
-      if (playerFilter.length == 0) {
+      if (playerFilter.length === 0) {
         throw new BadRequestException(`Id ${playerDto.id} is not a valid player!`);
       }
-
-      this.logger.log(playerFilter);
     })
 
     // Verify if the requester is one of the match players
 
-    const requesterIsOneOfTheMatchPlayers = createChallengeDto.players.filter(player => player.id == createChallengeDto.requester);
+    const requesterIsOneOfTheMatchPlayers = createChallengeDto.players.filter(player => player.id === createChallengeDto.requester);
 
-    if (requesterIsOneOfTheMatchPlayers.length == 0) {
+    if (requesterIsOneOfTheMatchPlayers.length === 0) {
       throw new BadRequestException(`Id ${createChallengeDto.requester} should be a match participant!`);
     }
-
-    this.logger.log(requesterIsOneOfTheMatchPlayers);
 
     const playerCategory = await this.categoriesService.getPlayerCategory(createChallengeDto.requester);
 
@@ -55,8 +51,20 @@ export class ChallengesService {
     challenge.category = playerCategory.category;
     challenge.requestDatetime = new Date();
     challenge.status = ChallengeStatus.PENDING;
+    challenge.players = playerCategory.players;
 
-    this.logger.log('Challenge created: ' + challenge);
+    // get only the challenges that have the same requester
+    const challenges = await this.challengeModel.find({ requester: challenge.requester }).exec();
+
+    // verify all the requester challenges in the database if the challengeDatetime is less than 24 hours from the current challengeDatime which is tring to be saved, if it is, throw an error
+    // challenges.forEach(challenge => {
+    //   const challengeDatetime = new Date(challenge.challengeDatetime);
+
+    //   challenge.save();
+    // });
+
+    this.logger.log('Challenges fetched: ' + challenges);
+    this.logger.verbose('Challenge created: ' + challenge);
 
     return await challenge.save();
   }
@@ -69,7 +77,7 @@ export class ChallengesService {
       .exec();
   }
 
-  async getPlayerChallenges(id: any): Promise<Array<IChallenge>> {
+  async getPlayerChallenges(id: string[]): Promise<Array<IChallenge>> {
     const players = await this.playersService.getAllPlayers();
 
     const playerFilter = players.filter(player => player.id === id);
