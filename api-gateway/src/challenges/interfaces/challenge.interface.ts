@@ -5,7 +5,7 @@ export interface IChallenge {
   challengeDatetime: Date;
   status: ChallengeStatus;
   requestDatetime: Date;
-  ResponseDatetime: Date;
+  responseDatetime: Date;
   requester: IPlayer;
   category: string;
   match?: string;

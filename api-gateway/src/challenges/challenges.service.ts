@@ -19,7 +19,7 @@ export class ChallengesService {
           desafios
       */
   private clientChallenges =
-    this.clientProxySmartRanking.getClientProxyDesafiosInstance();
+    this.clientProxySmartRanking.getClientProxyChallengesInstance();
 
   private clientAdminBackend =
     this.clientProxySmartRanking.getClientProxyAdminBackendInstance();
